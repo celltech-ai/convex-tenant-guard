@@ -1,5 +1,8 @@
 # convex-tenant-guard
 
+[![CI](https://github.com/celltech-ai/convex-tenant-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/celltech-ai/convex-tenant-guard/actions/workflows/ci.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 Tiny, zero-dependency helpers that enforce **row-level multi-tenant isolation** in [Convex](https://convex.dev).
 
 In a multi-tenant SaaS, one forgotten ownership check is all it takes to return customer A's row to customer B. The usual culprit:
@@ -117,6 +120,17 @@ try {
 4. Add a guard test that fails if a query reads a tenant table without scoping.
 
 `convex-tenant-guard` covers step 3 and supports step 4 with a typed, assertable error.
+
+## Fail-closed semantics
+
+Every helper treats a **nullish `tenantId` as "no access"** rather than risking a `undefined === undefined` match against an orphaned row:
+
+- `belongsToTenant` → `false`
+- `assertTenant` / `getInTenant` → throw `WRONG_TENANT`
+- `filterByTenant` → `[]`
+- `assertSameTenant` → throws if both documents share a nullish tenant value
+
+So if your auth ever resolves the tenant id to `undefined`, the request is denied, not silently authorized.
 
 ## License
 
