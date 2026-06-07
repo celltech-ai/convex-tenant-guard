@@ -135,3 +135,33 @@ describe("createTenantGuard", () => {
     }
   });
 });
+
+describe("fail-closed on nullish tenantId", () => {
+  // A row whose tenant field is also nullish must NOT be matched by a nullish
+  // tenantId — otherwise `undefined === undefined` silently authorizes access.
+  const orphan = { _id: "z", tenantId: undefined } as unknown as Order;
+
+  it("belongsToTenant is false for a nullish tenantId", () => {
+    expect(belongsToTenant(orphan, undefined)).toBe(false);
+    expect(belongsToTenant(ORDER_A, null)).toBe(false);
+  });
+
+  it("assertTenant throws WRONG_TENANT for a nullish tenantId", () => {
+    expect(() => assertTenant(orphan, undefined)).toThrow(TenantScopeError);
+    try {
+      assertTenant(ORDER_A, undefined);
+      expect.unreachable("should have thrown");
+    } catch (err) {
+      expect((err as TenantScopeError).code).toBe("WRONG_TENANT");
+    }
+  });
+
+  it("filterByTenant returns nothing for a nullish tenantId", () => {
+    expect(filterByTenant([orphan, ORDER_A], undefined)).toEqual([]);
+  });
+
+  it("assertSameTenant throws when both share a nullish tenant", () => {
+    const otherOrphan = { _id: "z2", tenantId: undefined } as unknown as Order;
+    expect(() => assertSameTenant(orphan, otherOrphan)).toThrow(TenantScopeError);
+  });
+});

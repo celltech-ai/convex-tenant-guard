@@ -50,7 +50,9 @@ export function belongsToTenant<T extends TenantDoc>(
   tenantId: unknown,
   field: string = DEFAULT_FIELD,
 ): doc is T {
-  return doc != null && doc[field] === tenantId;
+  // Fail closed: a nullish tenantId (e.g. auth resolved to undefined) must
+  // never match, even against a row whose field is also nullish.
+  return doc != null && tenantId != null && doc[field] === tenantId;
 }
 
 /**
@@ -69,7 +71,9 @@ export function assertTenant<T extends TenantDoc>(
   if (doc == null) {
     throw new TenantScopeError("NOT_FOUND", field);
   }
-  if (doc[field] !== tenantId) {
+  // Fail closed on a nullish tenantId — never let `undefined === undefined`
+  // silently authorize access.
+  if (tenantId == null || doc[field] !== tenantId) {
     throw new TenantScopeError("WRONG_TENANT", field);
   }
   return doc;
@@ -105,6 +109,9 @@ export function filterByTenant<T extends TenantDoc>(
   tenantId: unknown,
   field: string = DEFAULT_FIELD,
 ): T[] {
+  // Fail closed: a nullish tenantId selects nothing rather than matching
+  // rows whose field is also nullish.
+  if (tenantId == null) return [];
   return docs.filter((doc) => doc[field] === tenantId);
 }
 
@@ -121,7 +128,9 @@ export function assertSameTenant(
   if (a == null || b == null) {
     throw new TenantScopeError("NOT_FOUND", field);
   }
-  if (a[field] !== b[field]) {
+  // Fail closed: two documents that both lack a tenant value do NOT count as
+  // sharing a tenant.
+  if (a[field] == null || a[field] !== b[field]) {
     throw new TenantScopeError("WRONG_TENANT", field);
   }
 }
