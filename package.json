@@ -1,0 +1,65 @@
+{
+  "name": "convex-tenant-guard",
+  "version": "0.1.0",
+  "description": "Tiny, zero-dependency helpers that enforce row-level multi-tenant isolation in Convex. Stop a forgotten tenant check from leaking one customer's data to another.",
+  "keywords": [
+    "convex",
+    "multi-tenant",
+    "multitenancy",
+    "tenant-isolation",
+    "row-level-security",
+    "saas",
+    "authorization"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/celltech-ai/convex-tenant-guard#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/celltech-ai/convex-tenant-guard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/celltech-ai/convex-tenant-guard/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  },
+  "peerDependencies": {
+    "convex": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "convex": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
