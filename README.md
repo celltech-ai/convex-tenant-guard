@@ -1,6 +1,5 @@
 # convex-tenant-guard
 
-[![CI](https://github.com/celltech-ai/convex-tenant-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/celltech-ai/convex-tenant-guard/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 Tiny, zero-dependency helpers that enforce **row-level multi-tenant isolation** in [Convex](https://convex.dev).
